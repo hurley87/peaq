@@ -31,7 +31,7 @@ const config = createConfig({
             '--pcm-accent-color': '#ff4d4f',
             // ... other options
         },
-        logo: 'https://peaqonauts.vercel.app/vercel.svg',
+        logo: 'https://peaqonauts.vercel.app/favicon.ico',
     },
     walletConnectors: [
         evmWalletConnectors({
