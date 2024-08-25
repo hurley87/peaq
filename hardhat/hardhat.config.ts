@@ -19,6 +19,11 @@ const config = {
       accounts: [process.env.WALLET_KEY as string],
       gasPrice: 1000000000,
     },
+    agung: {
+      url: process.env.AGUNG_RPC_URL,
+      chainId: 9990,
+      accounts: [process.env.WALLET_KEY as string], // Make sure to add 0x prefix to the private key
+    },
   },
   etherscan: {
     apiKey: {

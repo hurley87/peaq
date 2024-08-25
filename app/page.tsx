@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { createWalletClient, createPublicClient, http, custom } from 'viem';
 import { baseSepolia } from 'viem/chains';
-import safeMintABI from '../abis/safeMint.json';
+import safeMintABI from '../abis/SafeMint.json';
 
 export default function Home() {
   const { user, login, logout } = usePrivy();
