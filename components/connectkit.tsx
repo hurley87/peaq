@@ -1,7 +1,7 @@
 'use client';
 
 import { ConnectKitProvider, createConfig } from '@particle-network/connectkit';
-import { baseSepolia } from '@particle-network/connectkit/chains';
+import { defineChain } from '@particle-network/connectkit/chains';
 import { evmWalletConnectors } from '@particle-network/connectkit/evm';
 import { wallet, EntryPosition } from '@particle-network/connectkit/wallet';
 import React from 'react';
@@ -14,6 +14,26 @@ const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID 
 if (!projectId || !clientKey || !appId) {
     throw new Error('Please configure the Particle project in .env first!');
 }
+
+// Define Peaq Testnet chain
+const peaqTestnet = defineChain({
+    id: 9990,
+    name: 'Agung Testnet',
+    nativeCurrency: {
+        decimals: 18,
+        name: 'Agung',
+        symbol: 'AGNG',
+    },
+    rpcUrls: {
+        default: {
+            http: [process.env.NEXT_PUBLIC_RPC_URL as string],
+        },
+    },
+    blockExplorers: {
+        default: { name: 'Explorer', url: 'https://agung-testnet.subscan.io/' },
+    },
+    testnet: true,
+});
 
 const config = createConfig({
     projectId,
@@ -45,7 +65,7 @@ const config = createConfig({
             visible: false,
         }),
     ],
-    chains: [baseSepolia],
+    chains: [peaqTestnet],
 });
 
 export const ParticleConnectkit = ({ children }: React.PropsWithChildren) => {

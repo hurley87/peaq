@@ -27,7 +27,9 @@ const config = {
   },
   etherscan: {
     apiKey: {
-      'base-sepolia': process.env.ETHERSCAN_KEY as string,
+      // 'base-sepolia': process.env.ETHERSCAN_KEY as string,
+      // 'base-mainnet': process.env.ETHERSCAN_KEY as string,
+      agung: process.env.SUBSCAN_KEY
     },
     customChains: [
       {
@@ -44,6 +46,14 @@ const config = {
         urls: {
           apiURL: 'https://api-sepolia.basescan.org/api',
           browserURL: 'https://sepolia.basescan.org',
+        },
+      },
+      {
+        network: 'agung',
+        chainId: 9990,
+        urls: {
+          apiURL: 'https://peaq-testnet.api.subscan.io',
+          browserURL: 'https://agung-testnet.subscan.io',
         },
       },
     ],
