@@ -29,7 +29,7 @@ const config = {
     apiKey: {
       // 'base-sepolia': process.env.ETHERSCAN_KEY as string,
       // 'base-mainnet': process.env.ETHERSCAN_KEY as string,
-      agung: process.env.SUBSCAN_KEY
+      agung: process.env.SUBSCAN_KEY,
     },
     customChains: [
       {
