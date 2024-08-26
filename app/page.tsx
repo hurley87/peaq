@@ -80,8 +80,6 @@ export default function Home() {
 
       const request = data?.request;
 
-      console.log('request: ', request);
-
       if (request) {
         const hash = await walletClient.writeContract(request as any);
         console.log('hash: ', hash);
