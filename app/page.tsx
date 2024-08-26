@@ -82,10 +82,10 @@ export default function Home() {
 
       if (request) {
         const hash = await walletClient.writeContract(request as any);
-        console.log('hash: ', hash);
-
         // // Wait for the transaction to be mined
-        await publicClient?.waitForTransactionReceipt({ hash });
+        const receipt = await publicClient?.waitForTransactionReceipt({ hash });
+
+        console.log('receipt: ', receipt);
       } else {
         throw new Error('Invalid request object');
       }
