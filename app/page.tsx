@@ -5,7 +5,6 @@ import {
 } from 'react';
 import safeMintABI from '../abis/SafeMint.json';
 import {
-  ConnectButton,
   useAccount,
   useDisconnect,
   // useParticleAuth,
@@ -16,7 +15,6 @@ import {
 export default function Home() {
   const { address, isConnected } = useAccount();
   const [isMinting, setIsMinting] = useState(false);
-  const { disconnect } = useDisconnect();
   const publicClient = usePublicClient();
   const [primaryWallet] = useWallets();
   // const { getUserInfo } = useParticleAuth();
@@ -101,15 +99,17 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-6">
-      {isConnected && <p>Address: {address}</p>}
       {!isConnected ? (
-        <ConnectButton />
+        <div className="flex justify-center">Connect your wallet</div>
       ) : (
-        <div className="flex gap-6">
-          <button onClick={handleMint} disabled={!address || isMinting}>
+        <div className="flex justify-center">
+          <button
+            className="text-sm bg-white text-black rounded-lg px-3 py-1"
+            onClick={handleMint}
+            disabled={!address || isMinting}
+          >
             {isMinting ? 'Minting...' : 'Mint NFT'}
           </button>
-          <button onClick={() => disconnect()}>Logout</button>
         </div>
       )}
     </div>

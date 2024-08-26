@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { ParticleConnectkit } from '@/components/connectkit';
 import CheckChain from '@/components/check-chain';
+import Header from '@/components/header';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
         <ParticleConnectkit>
           <div className="flex flex-col">
             <CheckChain />
+            <Header />
             <div>{children}</div>
           </div>
         </ParticleConnectkit>

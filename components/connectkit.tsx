@@ -50,7 +50,9 @@ const config = createConfig({
     mode: 'dark',
     theme: {
       '--pcm-accent-color': '#ff4d4f',
-      // ... other options
+      '--pcm-body-color': '#181B1E',
+      '--pcm-button-font-weight': '500',
+      '--pcm-button-border-color': '#EAECF0',
     },
     logo: 'https://peaqonauts.vercel.app/favicon.ico',
   },
