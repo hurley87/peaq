@@ -1,20 +1,37 @@
 'use client';
-import { useState } from 'react';
-import { createWalletClient, createPublicClient, http, custom } from 'viem';
-import { baseSepolia } from 'viem/chains';
+import {
+  // useEffect,
+  useState,
+} from 'react';
 import safeMintABI from '../abis/SafeMint.json';
-import { ConnectButton, useAccount, useDisconnect } from '@particle-network/connectkit';
+import {
+  ConnectButton,
+  useAccount,
+  useDisconnect,
+  // useParticleAuth,
+  usePublicClient,
+  useWallets,
+} from '@particle-network/connectkit';
 
 export default function Home() {
-  const { address, isConnected, chainId } = useAccount();
+  const { address, isConnected } = useAccount();
   const [isMinting, setIsMinting] = useState(false);
   const { disconnect } = useDisconnect();
-  
-  // Create a public client for interacting with the Base Sepolia network
-  const publicClient = createPublicClient({
-    chain: baseSepolia,
-    transport: http('https://sepolia.base.org')
-  });
+  const publicClient = usePublicClient();
+  const [primaryWallet] = useWallets();
+  // const { getUserInfo } = useParticleAuth();
+
+  // useEffect(() => {
+  //   const fetchUserInfo = async () => {
+  //     if (isConnected) {
+  //       const data = await getUserInfo();
+  //       console.log('data: ', data);
+  //     }
+  //   };
+  //   if (isConnected) {
+  //     fetchUserInfo();
+  //   }
+  // }, [isConnected]);
 
   /**
    * Handles the NFT minting process
@@ -25,7 +42,7 @@ export default function Home() {
    * 5. Executes the actual minting transaction
    */
   const handleMint = async () => {
-    if (!publicClient || !address) return;
+    if (!address) return;
 
     setIsMinting(true);
     try {
@@ -34,37 +51,46 @@ export default function Home() {
 
       // Get the signature and messageHash from the server
       // only authenticated users should be able to make this request
-      const verifyResponse = await fetch(`/api/verify?&message=${encodeURIComponent(message)}`, {
-        method: 'GET',
-      });
+      const verifyResponse = await fetch(
+        `/api/verify?&message=${encodeURIComponent(message)}`,
+        {
+          method: 'GET',
+        }
+      );
       const { signature, messageHash } = await verifyResponse.json();
 
       // Format the messageHash and signature
-      const formattedMessageHash = messageHash.startsWith('0x') ? messageHash : `0x${messageHash}`;
-      const formattedSignature = signature.startsWith('0x') ? signature : `0x${signature}`;
+      const formattedMessageHash = messageHash.startsWith('0x')
+        ? messageHash
+        : `0x${messageHash}`;
+      const formattedSignature = signature.startsWith('0x')
+        ? signature
+        : `0x${signature}`;
 
-      // Create a wallet client for transaction signing
-      // const ethereumProvider = (await wallet?.getEthereumProvider()) as any;
-      // const walletClient = await createWalletClient({
-      //   account: address as `0x${string}`,
-      //   chain: baseSepolia,
-      //   transport: custom(ethereumProvider),
-      // });
+      const walletClient = primaryWallet.getWalletClient();
 
       // // Simulate the contract interaction
-      // const { request } = await publicClient.simulateContract({
-      //   address: "0x1428c1573159CA958FE39D4998E0C4a3346130f1",
-      //   abi: safeMintABI.abi,
-      //   functionName: 'mintNFT',
-      //   args: [formattedMessageHash, formattedSignature],
-      //   account: address as `0x${string}`,
-      // });
+      const data = await publicClient?.simulateContract({
+        address: '0x0Cd40B41fd2cA8b91164B5888D3e2e2573D83B60',
+        abi: safeMintABI.abi,
+        functionName: 'mintNFT',
+        args: [formattedMessageHash, formattedSignature],
+        account: address as `0x${string}`,
+      });
 
-      // // Execute the actual minting transaction
-      // const hash = await walletClient.writeContract(request);
+      const request = data?.request;
 
-      // // Wait for the transaction to be mined
-      // await publicClient.waitForTransactionReceipt({ hash });
+      console.log('request: ', request);
+
+      if (request) {
+        const hash = await walletClient.writeContract(request as any);
+        console.log('hash: ', hash);
+
+        // // Wait for the transaction to be mined
+        await publicClient?.waitForTransactionReceipt({ hash });
+      } else {
+        throw new Error('Invalid request object');
+      }
 
       alert('NFT minted successfully!');
     } catch (error) {
@@ -76,14 +102,14 @@ export default function Home() {
   };
 
   return (
-    <div className='flex flex-col gap-6'>
+    <div className="flex flex-col gap-6">
       {isConnected && <p>Address: {address}</p>}
       {!isConnected ? (
         <ConnectButton />
       ) : (
-        <div className='flex gap-6'>
+        <div className="flex gap-6">
           <button onClick={handleMint} disabled={!address || isMinting}>
-            {isMinting ? "Minting..." : "Mint NFT"}
+            {isMinting ? 'Minting...' : 'Mint NFT'}
           </button>
           <button onClick={() => disconnect()}>Logout</button>
         </div>
