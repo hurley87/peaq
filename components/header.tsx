@@ -5,6 +5,7 @@ import {
   useDisconnect,
   ConnectButton,
 } from '@particle-network/connectkit';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function Header() {
@@ -31,7 +32,9 @@ export default function Header() {
 
   return (
     <span className="flex justify-between p-4 items-center">
-      <h1>Peaqonauts</h1>
+      <Link href="/">
+        <h1>Peaqonauts</h1>
+      </Link>
       {isConnected ? (
         <div className="flex items-center space-x-2">
           <span className="text-sm">{address}</span>

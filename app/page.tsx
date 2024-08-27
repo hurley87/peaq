@@ -1,78 +1,52 @@
 'use client';
-import {
-  // useEffect,
-  useState,
-} from 'react';
-import safeMintABI from '../abis/SafeMint.json';
+import { useEffect, useState } from 'react';
+import QuestsFactory from '../abis/QuestsFactory.json';
 import {
   useAccount,
-  useDisconnect,
-  // useParticleAuth,
   usePublicClient,
   useWallets,
 } from '@particle-network/connectkit';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+const QUEST_FACTORY_ADDRESS = '0xC112b652287D64c953cB1fb82b0DDcd5B99DF1a3';
 
 export default function Home() {
   const { address, isConnected } = useAccount();
   const [isMinting, setIsMinting] = useState(false);
   const publicClient = usePublicClient();
   const [primaryWallet] = useWallets();
-  // const { getUserInfo } = useParticleAuth();
+  const [quests, setQuests] = useState<any[]>([]);
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   const fetchUserInfo = async () => {
-  //     if (isConnected) {
-  //       const data = await getUserInfo();
-  //       console.log('data: ', data);
-  //     }
-  //   };
-  //   if (isConnected) {
-  //     fetchUserInfo();
-  //   }
-  // }, [isConnected]);
+  useEffect(() => {
+    const fetchQuests = async () => {
+      const fetchedQuests = (await publicClient?.readContract({
+        address: QUEST_FACTORY_ADDRESS,
+        abi: QuestsFactory.abi,
+        functionName: 'getQuests',
+      })) as any[];
 
-  /**
-   * Handles the NFT minting process
-   * 1. Verifies this user is eligible to mint
-   * 2. Gets a signature from the server
-   * 3. Creates a wallet client
-   * 4. Simulates the contract interaction
-   * 5. Executes the actual minting transaction
-   */
+      setQuests(fetchedQuests || []);
+    };
+    if (isConnected) {
+      fetchQuests();
+    }
+  }, [isConnected, publicClient]);
+
   const handleMint = async () => {
     if (!address) return;
 
     setIsMinting(true);
     try {
-      // Create a message to be signed for verification
-      const message = `Verify mint for address ${address}`;
-
-      // Get the signature and messageHash from the server
-      // only authenticated users should be able to make this request
-      const verifyResponse = await fetch(
-        `/api/verify?&message=${encodeURIComponent(message)}`,
-        {
-          method: 'GET',
-        }
-      );
-      const { signature, messageHash } = await verifyResponse.json();
-
-      // Format the messageHash and signature
-      const formattedMessageHash = messageHash.startsWith('0x')
-        ? messageHash
-        : `0x${messageHash}`;
-      const formattedSignature = signature.startsWith('0x')
-        ? signature
-        : `0x${signature}`;
-
       const walletClient = primaryWallet.getWalletClient();
 
       // // Simulate the contract interaction
       const data = await publicClient?.simulateContract({
-        address: '0x0Cd40B41fd2cA8b91164B5888D3e2e2573D83B60',
-        abi: safeMintABI.abi,
-        functionName: 'mintNFT',
-        args: [formattedMessageHash, formattedSignature],
+        address: QUEST_FACTORY_ADDRESS,
+        abi: QuestsFactory.abi,
+        functionName: 'createQuest',
+        args: ['0x67b79424bd38faa86001af9beea28a35a1cc122c'],
         account: address as `0x${string}`,
       });
 
@@ -81,9 +55,11 @@ export default function Home() {
       if (request) {
         const hash = await walletClient.writeContract(request as any);
         // // Wait for the transaction to be mined
-        const receipt = await publicClient?.waitForTransactionReceipt({ hash });
+        await publicClient?.waitForTransactionReceipt({ hash });
 
-        console.log('receipt: ', receipt);
+        const questAddress = data?.result;
+
+        router.push(`/quests/${questAddress}`);
       } else {
         throw new Error('Invalid request object');
       }
@@ -102,15 +78,31 @@ export default function Home() {
       {!isConnected ? (
         <div className="flex justify-center">Connect your wallet</div>
       ) : (
-        <div className="flex justify-center">
-          <button
-            className="text-sm bg-white text-black rounded-lg px-3 py-1"
-            onClick={handleMint}
-            disabled={!address || isMinting}
-          >
-            {isMinting ? 'Minting...' : 'Mint NFT'}
-          </button>
-        </div>
+        <>
+          <div className="flex justify-center">
+            <button
+              className="text-sm bg-white text-black rounded-lg px-3 py-1"
+              onClick={handleMint}
+              disabled={!address || isMinting}
+            >
+              {isMinting ? 'Creating...' : 'Create Quest'}
+            </button>
+          </div>
+          <div className="px-3">
+            <h2 className="text-xl font-bold mb-4">Quests</h2>
+            {quests.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {quests.map((quest, index) => (
+                  <Link key={index} href={`/quests/${quest}`}>
+                    Quest #{index + 1}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p>No quests available.</p>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
