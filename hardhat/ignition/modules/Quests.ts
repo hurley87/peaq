@@ -1,11 +1,11 @@
-import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+// import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
 
-// https://sepolia.basescan.org/address/0x1428c1573159CA958FE39D4998E0C4a3346130f1#writeContract
+// // https://sepolia.basescan.org/address/0x1428c1573159CA958FE39D4998E0C4a3346130f1#writeContract
 
-const QuestsModule = buildModule('QuestsModule', (m) => {
-  const quests = m.contract('QuestsFactory', []);
+// const QuestsModule = buildModule('QuestsModule', (m) => {
+//   const quests = m.contract('QuestsFactory', []);
 
-  return { quests };
-});
+//   return { quests };
+// });
 
-export default QuestsModule;
+// export default QuestsModule;
