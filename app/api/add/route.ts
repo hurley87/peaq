@@ -1,4 +1,4 @@
-export const maxDuration = 30;
+export const maxDuration = 15;
 
 import { NextRequest } from 'next/server';
 import {
