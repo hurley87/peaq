@@ -64,7 +64,7 @@ export default function Home() {
         throw new Error('Invalid request object');
       }
 
-      alert('NFT minted successfully!');
+      alert('Quest created!');
     } catch (error) {
       console.error('Minting error:', error);
       alert('Error minting NFT. Please try again.');

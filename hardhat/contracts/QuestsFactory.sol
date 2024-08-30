@@ -10,12 +10,12 @@ contract QuestsFactory is Ownable {
 
     constructor() Ownable(msg.sender) {}
 
-    // Function to create a new Quest contract for a specific ERC-1155 collection
+    // Function to create a new Quest contract for a specific NFT collection
     function createQuest(address nftContract) external onlyOwner returns (address) {
         // Deploy a new Quests contract
         Quests quest = new Quests(IERC721Enumerable(nftContract));
 
-        // Transfer ownership of the newly created Quests1155 contract to the factory owner
+        // Transfer ownership of the newly created Quests contract to the factory owner
         quest.transferOwnership(owner());
 
         // Store the new contract's address
