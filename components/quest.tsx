@@ -7,6 +7,7 @@ import {
 } from '@particle-network/connectkit';
 import { useState, useEffect } from 'react';
 import Quests from '@/abis/Quests.json';
+import toast from 'react-hot-toast';
 
 export default function Quest({
   questAddress,
@@ -14,6 +15,7 @@ export default function Quest({
   questAddress: `0x${string}`;
 }) {
   const [walletAddress, setWalletAddress] = useState<string>('');
+  const [tokenURI, setTokenURI] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [canClaim, setCanClaim] = useState<boolean>(false);
   const { address, isConnected } = useAccount();
@@ -44,7 +46,7 @@ export default function Quest({
   const handleAddToAllowlist = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/add', {
+      const response = await fetch('/api/mint', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,15 +54,58 @@ export default function Quest({
         body: JSON.stringify({
           walletAddress,
           questAddress,
+          tokenURI,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add to allowlist');
+        toast.error('Failed to mint');
       }
 
+      const { tokenId } = await response.json();
+
+      toast.success(`Minted Trait NFT $${tokenId}`);
+
+      const approveReponse = await fetch('/api/approve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          questAddress,
+          tokenId,
+        }),
+      });
+
+      if (!approveReponse.ok) {
+        throw new Error('Failed to approve token transfer');
+      }
+
+      toast.success(`Approved token #${tokenId} transfer`);
+
+      const addReponse = await fetch('/api/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          walletAddress,
+          tokenId,
+          questAddress,
+        }),
+      });
+
+      if (!addReponse.ok) {
+        throw new Error('Failed to approve token transfer');
+      }
+
+      toast.success(
+        `${walletAddress.slice(0, 6)}...${walletAddress.slice(
+          -4
+        )} can can claim token #${tokenId}`
+      );
+
       // Handle success (e.g., show a success message)
-      alert('Successfully added to allowlist');
       setWalletAddress(''); // Clear the input
     } catch (error) {
       console.error('Error adding to allowlist:', error);
@@ -114,8 +159,6 @@ export default function Quest({
     return <div>Please connect your wallet</div>;
   }
 
-  console.log('Address:', address);
-
   if (address === '0x1169e27981bceed47e590bb9e327b26529962bae') {
     return (
       <div className="flex flex-col gap-6 px-3">
@@ -131,6 +174,14 @@ export default function Quest({
               onChange={(e) => setWalletAddress(e.target.value)}
               type="text"
               placeholder="Address"
+              className="bg-white rounded-sm text-black"
+              disabled={isLoading}
+            />
+            <input
+              value={tokenURI}
+              onChange={(e) => setTokenURI(e.target.value)}
+              type="text"
+              placeholder="Token URI"
               className="bg-white rounded-sm text-black"
               disabled={isLoading}
             />

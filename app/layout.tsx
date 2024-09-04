@@ -4,6 +4,7 @@ import './globals.css';
 import { ParticleConnectkit } from '@/components/connectkit';
 import CheckChain from '@/components/check-chain';
 import Header from '@/components/header';
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
             <div>{children}</div>
           </div>
         </ParticleConnectkit>
+        <Toaster />
       </body>
     </html>
   );

@@ -8,7 +8,7 @@ import {
   http,
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import Quests from '@/abis/Quests.json';
+import Traits from '@/abis/Traits.json';
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL as string;
 
@@ -38,24 +38,29 @@ const walletClient = createWalletClient({
 });
 
 export async function POST(req: NextRequest) {
-  const { walletAddress, tokenId, questAddress } = await req.json();
+  const { questAddress, tokenId } = await req.json();
 
   try {
     const privateKey = process.env.SERVER_PRIVATE_KEY;
     const account = privateKeyToAccount(privateKey as `0x${string}`);
 
-    // Add to allowlist
-    const { request }: any = await publicClient.simulateContract({
-      account,
-      address: questAddress,
-      abi: Quests.abi,
-      functionName: 'addToAllowlist',
-      args: [walletAddress, tokenId],
+    // Approve the token transfer
+    const { request: approveRequest }: any =
+      await publicClient.simulateContract({
+        account,
+        address: '0x67b79424bd38faa86001af9beea28a35a1cc122c', // Traits contract address
+        abi: Traits.abi,
+        functionName: 'approve',
+        args: [questAddress, tokenId],
+      });
+
+    const approveHash = await walletClient.writeContract(approveRequest);
+    console.log('Approve hash: ', approveHash);
+
+    const approveReceipt = await publicClient?.waitForTransactionReceipt({
+      hash: approveHash,
     });
-
-    const transaction = await walletClient.writeContract(request);
-
-    console.log('Transaction hash: ', transaction);
+    console.log('Approve receipt: ', approveReceipt);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
