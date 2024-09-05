@@ -2,6 +2,7 @@
   "_format": "hh-sol-artifact-1",
   "contractName": "Traits",
   "sourceName": "contracts/Traits.sol",
+  "address": "0x67b79424bd38faa86001af9beea28a35a1cc122c",
   "abi": [
     {
       "inputs": [],
