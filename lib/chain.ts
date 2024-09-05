@@ -1,4 +1,4 @@
-import { defineChain } from '@particle-network/connectkit/chains';
+import { defineChain } from 'viem';
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL as string;
 
