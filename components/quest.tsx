@@ -109,7 +109,7 @@ export default function Quest({
       setWalletAddress(''); // Clear the input
     } catch (error) {
       console.error('Error adding to allowlist:', error);
-      alert('This address is already on the allowlist');
+      toast.error('Failed to mint');
     } finally {
       setIsLoading(false);
     }
@@ -143,13 +143,13 @@ export default function Quest({
 
         // Update canClaim state after successful claim
         setCanClaim(false);
-        alert('NFT claimed successfully!');
+        toast.success('NFT claimed successfully!');
       } else {
         throw new Error('Invalid request object');
       }
     } catch (error) {
       console.error('Error claiming NFT:', error);
-      alert('Failed to claim NFT. Please try again.');
+      toast.error('Failed to claim NFT. Please try again.');
     } finally {
       setIsClaimLoading(false);
     }

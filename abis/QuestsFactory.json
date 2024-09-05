@@ -2,6 +2,7 @@
   "_format": "hh-sol-artifact-1",
   "contractName": "QuestsFactory",
   "sourceName": "contracts/QuestsFactory.sol",
+  "address": "0xC112b652287D64c953cB1fb82b0DDcd5B99DF1a3",
   "abi": [
     {
       "inputs": [],

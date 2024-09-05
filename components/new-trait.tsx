@@ -2,6 +2,7 @@
 import { gaslessFundAndUploadSingleFile, uploadMetadata } from '@/lib/irys';
 import Link from 'next/link';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const IRYS_URL = 'https://gateway.irys.xyz/';
 
@@ -34,12 +35,13 @@ export default function NewTrait() {
         image: `${IRYS_URL}${id}`,
       });
 
-      setTokenURI(`${IRYS_URL}${receiptId}`);
+      toast.success('Uploaded successfully');
 
+      setTokenURI(`${IRYS_URL}${receiptId}`);
       setIsUploading(false);
     } catch (error) {
       console.error('Error uploading:', error);
-      alert('Error uploading');
+      toast.error('Error uploading');
       setIsUploading(false);
     }
   };

@@ -8,8 +8,8 @@ import {
 } from '@particle-network/connectkit';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-const QUEST_FACTORY_ADDRESS = '0xC112b652287D64c953cB1fb82b0DDcd5B99DF1a3';
+import Traits from '../abis/Traits.json';
+import toast from 'react-hot-toast';
 
 export default function Home() {
   const { address, isConnected } = useAccount();
@@ -22,7 +22,7 @@ export default function Home() {
   useEffect(() => {
     const fetchQuests = async () => {
       const fetchedQuests = (await publicClient?.readContract({
-        address: QUEST_FACTORY_ADDRESS,
+        address: QuestsFactory.address as `0x${string}`,
         abi: QuestsFactory.abi,
         functionName: 'getQuests',
       })) as any[];
@@ -43,10 +43,10 @@ export default function Home() {
 
       // // Simulate the contract interaction
       const data = await publicClient?.simulateContract({
-        address: QUEST_FACTORY_ADDRESS,
+        address: QuestsFactory.address as `0x${string}`,
         abi: QuestsFactory.abi,
         functionName: 'createQuest',
-        args: ['0x67b79424bd38faa86001af9beea28a35a1cc122c'],
+        args: [Traits.address],
         account: address as `0x${string}`,
       });
 
@@ -64,10 +64,10 @@ export default function Home() {
         throw new Error('Invalid request object');
       }
 
-      alert('Quest created!');
+      toast.success('Quest created!');
     } catch (error) {
       console.error('Minting error:', error);
-      alert('Error minting NFT. Please try again.');
+      toast.error('Error minting NFT. Please try again.');
     } finally {
       setIsMinting(false);
     }
