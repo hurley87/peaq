@@ -1,3 +1,5 @@
+export const maxDuration = 15;
+
 import { NextRequest } from 'next/server';
 import { createPublicClient, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -39,7 +41,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // mint token to admin wallet
+    // Proceed with minting and adding to allowlist
     const { request: mintRequest }: any = await publicClient.simulateContract({
       account,
       address: Traits.address as `0x${string}`,

@@ -1,3 +1,5 @@
+export const maxDuration = 15;
+
 import { NextRequest } from 'next/server';
 import { createPublicClient, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
