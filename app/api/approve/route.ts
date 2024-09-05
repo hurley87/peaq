@@ -1,31 +1,10 @@
-export const maxDuration = 15;
-
 import { NextRequest } from 'next/server';
-import {
-  createPublicClient,
-  createWalletClient,
-  defineChain,
-  http,
-} from 'viem';
+import { createPublicClient, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import Traits from '@/abis/Traits.json';
+import chain from '@/lib/chain';
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL as string;
-
-const chain = defineChain({
-  id: 9990,
-  name: 'Agung',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'AGNG',
-    symbol: 'AGNG',
-  },
-  rpcUrls: {
-    default: {
-      http: [RPC_URL],
-    },
-  },
-});
 
 const publicClient = createPublicClient({
   chain,
@@ -48,17 +27,17 @@ export async function POST(req: NextRequest) {
     const { request: approveRequest }: any =
       await publicClient.simulateContract({
         account,
-        address: '0x67b79424bd38faa86001af9beea28a35a1cc122c', // Traits contract address
+        address: Traits.address as `0x${string}`, // Traits contract address
         abi: Traits.abi,
         functionName: 'approve',
         args: [questAddress, tokenId],
       });
 
-    const approveHash = await walletClient.writeContract(approveRequest);
-    console.log('Approve hash: ', approveHash);
+    const hash = await walletClient.writeContract(approveRequest);
+    console.log('Approve hash: ', hash);
 
     const approveReceipt = await publicClient?.waitForTransactionReceipt({
-      hash: approveHash,
+      hash,
     });
     console.log('Approve receipt: ', approveReceipt);
 

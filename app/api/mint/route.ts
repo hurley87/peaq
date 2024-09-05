@@ -1,32 +1,11 @@
-export const maxDuration = 15;
-
 import { NextRequest } from 'next/server';
-import {
-  createPublicClient,
-  createWalletClient,
-  defineChain,
-  http,
-} from 'viem';
+import { createPublicClient, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import Quests from '@/abis/Quests.json';
 import Traits from '@/abis/Traits.json';
+import chain from '@/lib/chain';
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL as string;
-
-const chain = defineChain({
-  id: 9990,
-  name: 'Agung',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'AGNG',
-    symbol: 'AGNG',
-  },
-  rpcUrls: {
-    default: {
-      http: [RPC_URL],
-    },
-  },
-});
 
 const publicClient = createPublicClient({
   chain,
@@ -60,11 +39,10 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Proceed with minting and adding to allowlist
-    // Simulate the contract interaction
+    // mint token to admin wallet
     const { request: mintRequest }: any = await publicClient.simulateContract({
       account,
-      address: '0x67b79424bd38faa86001af9beea28a35a1cc122c',
+      address: Traits.address as `0x${string}`,
       abi: Traits.abi,
       functionName: 'safeMint',
       args: ['0x1169E27981BceEd47E590bB9E327b26529962bAe', tokenURI],

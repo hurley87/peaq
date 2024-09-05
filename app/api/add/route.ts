@@ -1,31 +1,10 @@
-export const maxDuration = 15;
-
 import { NextRequest } from 'next/server';
-import {
-  createPublicClient,
-  createWalletClient,
-  defineChain,
-  http,
-} from 'viem';
+import { createPublicClient, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import Quests from '@/abis/Quests.json';
+import chain from '@/lib/chain';
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL as string;
-
-const chain = defineChain({
-  id: 9990,
-  name: 'Agung',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'AGNG',
-    symbol: 'AGNG',
-  },
-  rpcUrls: {
-    default: {
-      http: [RPC_URL],
-    },
-  },
-});
 
 const publicClient = createPublicClient({
   chain,

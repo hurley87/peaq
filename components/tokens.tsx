@@ -22,13 +22,12 @@ export const Tokens = () => {
     return null;
   }
 
-  console.log('Token IDs: ', tokenIds);
-
   return (
     <div className="grid grid-cols-2 gap-4">
       {tokenIds.map((tokenId) => (
         <Token key={tokenId} tokenId={tokenId} showActions={true} />
       ))}
+      {tokenIds.length === 0 && <p>No tokens found</p>}
     </div>
   );
 };

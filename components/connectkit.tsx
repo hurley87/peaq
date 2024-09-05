@@ -1,10 +1,10 @@
 'use client';
 
 import { ConnectKitProvider, createConfig } from '@particle-network/connectkit';
-import { defineChain } from '@particle-network/connectkit/chains';
 import { evmWalletConnectors } from '@particle-network/connectkit/evm';
 import { wallet, EntryPosition } from '@particle-network/connectkit/wallet';
 import React from 'react';
+import chain from '@/lib/chain';
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID as string;
 const clientKey = process.env.NEXT_PUBLIC_CLIENT_KEY as string;
@@ -15,26 +15,6 @@ const walletConnectProjectId = process.env
 if (!projectId || !clientKey || !appId) {
   throw new Error('Please configure the Particle project in .env first!');
 }
-
-// Define Peaq Testnet chain
-const peaqTestnet = defineChain({
-  id: 9990,
-  name: 'Agung Testnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Agung',
-    symbol: 'AGNG',
-  },
-  rpcUrls: {
-    default: {
-      http: [process.env.NEXT_PUBLIC_RPC_URL as string],
-    },
-  },
-  blockExplorers: {
-    default: { name: 'Explorer', url: 'https://agung-testnet.subscan.io/' },
-  },
-  testnet: true,
-});
 
 const config = createConfig({
   projectId,
@@ -48,12 +28,7 @@ const config = createConfig({
     connectorsOrder: ['wallet'],
     language: 'en-US',
     mode: 'dark',
-    theme: {
-      // '--pcm-accent-color': '#ff4d4f',
-      // '--pcm-body-color': '#181B1E',
-      // '--pcm-button-font-weight': '500',
-      // '--pcm-button-border-color': '#EAECF0',
-    },
+    theme: {},
     logo: 'https://peaqonauts.vercel.app/favicon.ico',
   },
   walletConnectors: [
@@ -68,7 +43,7 @@ const config = createConfig({
       visible: false,
     }),
   ],
-  chains: [peaqTestnet],
+  chains: [chain],
 });
 
 export const ParticleConnectkit = ({ children }: React.PropsWithChildren) => {
