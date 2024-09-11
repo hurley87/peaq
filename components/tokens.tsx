@@ -7,6 +7,7 @@ import {
   getNFTUri,
   tokenOfOwnerByIndexSS,
   getEquippedTraits,
+  getTokenURIFromImages,
 } from '@/lib/tokens';
 import { useEffect, useState } from 'react';
 import {
@@ -16,10 +17,7 @@ import {
 } from '@particle-network/connectkit';
 import SolarSeekers from '@/abis/SolarSeekers.json';
 import toast from 'react-hot-toast';
-import { gaslessFundAndUploadSingleFile, uploadMetadata } from '@/lib/irys';
 import { Token } from './token';
-
-const IRYS_URL = 'https://gateway.irys.xyz/';
 
 export const Tokens = () => {
   const { address } = useAccount();
@@ -58,15 +56,11 @@ export const Tokens = () => {
       // fetch solar seeker NFT
       const nftId = (await getNFTId(address)) as number;
 
-      console.log('tokenIds', tokenIds);
-      console.log('nftIds', nftId);
-
       if (nftId || nftId === 0) {
         setHasNFT(true);
         const tokenId = await tokenOfOwnerByIndexSS(address, nftId);
-        console.log('tokenId', tokenId);
         const nftUri = await getNFTUri(tokenId as number);
-        console.log('nftUri', nftUri);
+
         const tokenData = await getToken(nftUri as string);
         setToken({
           id: tokenId,
@@ -94,51 +88,7 @@ export const Tokens = () => {
 
       const urls = tokens.map((token) => token.image);
 
-      const response = await fetch('/api/combine', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ urls }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const buffer = await response.arrayBuffer();
-      const blob = new Blob([buffer], { type: 'image/png' });
-      const file = new File([blob], 'combined_image.png', {
-        type: 'image/png',
-      });
-
-      console.log('Combined image file:', file);
-
-      const tags = [{ name: 'Content-Type', value: 'image/png' }];
-
-      const id = await gaslessFundAndUploadSingleFile(file, tags);
-
-      console.log('Uploaded with id:', id);
-
-      const image = `${IRYS_URL}${id}`;
-
-      console.log('image', image);
-
-      const name = 'Solar Seeker';
-      const description = 'Solar Seeker';
-
-      const receiptId = await uploadMetadata({
-        name,
-        description,
-        image: `${IRYS_URL}${id}`,
-        attributes: [{ trait_type: 'Background', value: 0 }],
-      });
-
-      console.log('receiptId', receiptId);
-
-      const tokenURI = `${IRYS_URL}${receiptId}`;
-
-      console.log('tokenURI', tokenURI);
+      const tokenURI = await getTokenURIFromImages(urls);
 
       const data = await publicClient?.simulateContract({
         address: SolarSeekers.address as `0x${string}`,
@@ -190,13 +140,11 @@ export const Tokens = () => {
   const handleUpdateTraits = async () => {
     if (!address) return;
     setIsUpdating(true);
-    console.log('selectedUnequippedTraits', selectedUnequippedTraits);
     // get traits from selectedUnequippedTraits
     const traits = tokens.filter((token) =>
       selectedUnequippedTraits.includes(token.id)
     );
     const traitIds = traits.map((trait) => trait.id);
-    console.log('traitIds', traitIds);
     // iterate through traits and get "Value" from attributes
     const slots = traits.map((trait) => {
       const type = trait.attributes.find(
@@ -208,7 +156,6 @@ export const Tokens = () => {
       if (type.value === 'Powercore') return 3;
       return 1;
     });
-    console.log('slots', slots);
 
     // iterate through equippedTraits and update the slot with the traitId
     slots.forEach((slot, index) => {
@@ -216,65 +163,17 @@ export const Tokens = () => {
       equippedTraits[slot] = BigInt(traitIds[index]);
     });
 
-    console.log('equippedTraits', equippedTraits);
-
     // convert each equippedTrait to its token image
     const urls = equippedTraits.slice(0, 4).map((trait) => {
       const token = tokens.find((token) => token.id === Number(trait));
       return token?.image;
     });
-    console.log('urls', urls);
 
     try {
       // combine the images and upload to irys
       const walletClient = primaryWallet.getWalletClient();
 
-      const response = await fetch('/api/combine', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ urls }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const buffer = await response.arrayBuffer();
-      const blob = new Blob([buffer], { type: 'image/png' });
-      const file = new File([blob], 'combined_image.png', {
-        type: 'image/png',
-      });
-
-      console.log('Combined image file:', file);
-
-      const tags = [{ name: 'Content-Type', value: 'image/png' }];
-
-      const id = await gaslessFundAndUploadSingleFile(file, tags);
-
-      console.log('Uploaded with id:', id);
-
-      const image = `${IRYS_URL}${id}`;
-
-      console.log('image', image);
-
-      const name = 'Solar Seeker';
-      const description = 'Solar Seeker';
-
-      const receiptId = await uploadMetadata({
-        name,
-        description,
-        image: `${IRYS_URL}${id}`,
-        attributes: [{ trait_type: 'Background', value: 0 }],
-      });
-
-      const tokenURI = `${IRYS_URL}${receiptId}`;
-
-      console.log('token.id', token.id);
-      console.log('traitIds', traitIds);
-      console.log('slots', slots);
-      console.log('tokenURI', tokenURI);
+      const tokenURI = await getTokenURIFromImages(urls);
 
       const data = await publicClient?.simulateContract({
         address: SolarSeekers.address as `0x${string}`,
@@ -288,9 +187,10 @@ export const Tokens = () => {
 
       if (request) {
         const hash = await walletClient.writeContract(request as any);
-        console.log('hash', hash);
         await publicClient?.waitForTransactionReceipt({ hash });
-        setImage(image);
+
+        const tokenData = await getToken(tokenURI);
+        setImage(tokenData.image);
       } else {
         throw new Error('Invalid request object');
       }
@@ -303,11 +203,6 @@ export const Tokens = () => {
       setIsUpdating(false);
     }
   };
-
-  console.log('token', token);
-  console.log('equippedTraits', equippedTraits);
-  console.log('tokens', tokens);
-  console.log('selectedUnequippedTraits', selectedUnequippedTraits);
 
   const unequippedTraits = tokens.filter(
     (token) => !equippedTraits.map((trait) => Number(trait)).includes(token.id)
@@ -372,14 +267,16 @@ export const Tokens = () => {
   }
 
   return (
-    <div className="flex max-w-sm w-full relative">
-      <button
-        disabled={tokens.length < 4}
-        className="bg-white text-black rounded px-2 py-1 disabled:opacity-50"
-        onClick={handleMint}
-      >
-        {isMinting ? 'Minting ...' : 'Mint Solar Seeker'}
-      </button>
+    <div className="flex flex-col gap-6 max-w-sm w-full relative">
+      <div>
+        <button
+          disabled={tokens.length < 4}
+          className="bg-white text-black rounded px-2 py-1 disabled:opacity-50"
+          onClick={handleMint}
+        >
+          {isMinting ? 'Minting ...' : 'Mint Solar Seeker'}
+        </button>
+      </div>
 
       {tokens.slice(0, 4).map((token) => (
         <img key={token.id} src={token.image} className="absolute mt-10" />

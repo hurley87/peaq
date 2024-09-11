@@ -2,6 +2,9 @@ import { createPublicClient, http } from 'viem';
 import SolarSeekerTraits from '@/abis/SolarSeekerTraits.json';
 import SolarSeekers from '@/abis/SolarSeekers.json';
 import chain from '@/lib/chain';
+import { gaslessFundAndUploadSingleFile, uploadMetadata } from './irys';
+
+const IRYS_URL = 'https://gateway.irys.xyz/';
 
 export const publicClient = createPublicClient({
   chain,
@@ -163,4 +166,47 @@ export async function getToken(uri: string) {
   const token = await content.json();
 
   return token;
+}
+
+export async function getTokenURIFromImages(urls: string[]) {
+  const response = await fetch('/api/combine', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ urls }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const buffer = await response.arrayBuffer();
+  const blob = new Blob([buffer], { type: 'image/png' });
+  const file = new File([blob], 'combined_image.png', {
+    type: 'image/png',
+  });
+
+  console.log('Combined image file:', file);
+
+  const tags = [{ name: 'Content-Type', value: 'image/png' }];
+
+  const id = await gaslessFundAndUploadSingleFile(file, tags);
+
+  console.log('Uploaded with id:', id);
+
+  const image = `${IRYS_URL}${id}`;
+
+  console.log('image', image);
+
+  const name = 'Solar Seeker';
+  const description = 'Solar Seeker';
+
+  const receiptId = await uploadMetadata({
+    name,
+    description,
+    image: `${IRYS_URL}${id}`,
+  });
+
+  return `${IRYS_URL}${receiptId}`;
 }
