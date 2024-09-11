@@ -36,8 +36,6 @@ export async function POST(req: NextRequest) {
 
     const transaction = await walletClient.writeContract(request);
 
-    console.log('Transaction hash: ', transaction);
-
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

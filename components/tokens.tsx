@@ -68,7 +68,6 @@ export const Tokens = () => {
         });
 
         const equippedTraits = await getEquippedTraits(tokenId as number);
-        console.log('equippedTraits', equippedTraits);
         setEquippedTraits(equippedTraits as bigint[]);
       }
       setIsLoading(false);

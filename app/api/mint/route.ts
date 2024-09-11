@@ -52,16 +52,11 @@ export async function POST(req: NextRequest) {
 
     const hash = await walletClient.writeContract(mintRequest);
 
-    console.log('Mint hash: ', hash);
-
     const receipt = await publicClient?.waitForTransactionReceipt({ hash });
-
-    console.log('Mint receipt: ', receipt);
 
     // The tokenId will be the return value of the mint function
     const token = receipt.logs[0]?.topics[3];
     const tokenId = BigInt(token ?? 0).toString();
-    console.log('Token ID: ', tokenId);
 
     return new Response(JSON.stringify({ tokenId }), {
       status: 200,

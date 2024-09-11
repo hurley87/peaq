@@ -136,11 +136,9 @@ export default function Quest({
 
       if (request) {
         const hash = await walletClient.writeContract(request);
-        console.log('Transaction hash:', hash);
 
         // Wait for transaction confirmation
-        const receipt = await publicClient?.waitForTransactionReceipt({ hash });
-        console.log('Transaction receipt:', receipt);
+        await publicClient?.waitForTransactionReceipt({ hash });
 
         // Update canClaim state after successful claim
         setCanClaim(false);

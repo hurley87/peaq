@@ -12,7 +12,6 @@ export const publicClient = createPublicClient({
 });
 
 export async function getMintAllowance(address: string) {
-  console.log('address', address);
   try {
     const allowanceData = await publicClient.readContract({
       address: SolarSeekerTraits.address as `0x${string}`,
@@ -187,25 +186,18 @@ export async function getTokenURIFromImages(urls: string[]) {
     type: 'image/png',
   });
 
-  console.log('Combined image file:', file);
-
   const tags = [{ name: 'Content-Type', value: 'image/png' }];
 
   const id = await gaslessFundAndUploadSingleFile(file, tags);
 
-  console.log('Uploaded with id:', id);
-
   const image = `${IRYS_URL}${id}`;
-
-  console.log('image', image);
-
   const name = 'Solar Seeker';
   const description = 'Solar Seeker';
 
   const receiptId = await uploadMetadata({
     name,
     description,
-    image: `${IRYS_URL}${id}`,
+    image,
   });
 
   return `${IRYS_URL}${receiptId}`;

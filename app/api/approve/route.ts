@@ -36,12 +36,10 @@ export async function POST(req: NextRequest) {
       });
 
     const hash = await walletClient.writeContract(approveRequest);
-    console.log('Approve hash: ', hash);
 
-    const approveReceipt = await publicClient?.waitForTransactionReceipt({
+    await publicClient?.waitForTransactionReceipt({
       hash,
     });
-    console.log('Approve receipt: ', approveReceipt);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

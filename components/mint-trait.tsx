@@ -34,7 +34,6 @@ export default function MintTrait() {
     };
     fetchAllowance();
   }, [address]);
-  console.log('allowance', allowance);
 
   const handleUpload = async () => {
     setIsUploading(true);
