@@ -1,5 +1,6 @@
 import { createPublicClient, http } from 'viem';
-import traitsABI from '@/abis/Traits.json';
+import SolarSeekerTraits from '@/abis/SolarSeekerTraits.json';
+import SolarSeekers from '@/abis/SolarSeekers.json';
 import chain from '@/lib/chain';
 
 export const publicClient = createPublicClient({
@@ -7,11 +8,42 @@ export const publicClient = createPublicClient({
   transport: http(process.env.NEXT_PUBLIC_RPC_URL!),
 });
 
+export async function getMintAllowance(address: string) {
+  console.log('address', address);
+  try {
+    const allowanceData = await publicClient.readContract({
+      address: SolarSeekerTraits.address as `0x${string}`,
+      abi: SolarSeekerTraits.abi,
+      functionName: 'mintAllowance',
+      args: [address],
+    });
+    const allowance: number = Number(allowanceData);
+    return allowance;
+  } catch (error) {
+    return error;
+  }
+}
+
 export async function balanceOf(address: string) {
   try {
     const balanceData = await publicClient.readContract({
-      address: traitsABI.address as `0x${string}`,
-      abi: traitsABI.abi,
+      address: SolarSeekerTraits.address as `0x${string}`,
+      abi: SolarSeekerTraits.abi,
+      functionName: 'balanceOf',
+      args: [address],
+    });
+    const balance: number = Number(balanceData);
+    return balance;
+  } catch (error) {
+    return error;
+  }
+}
+
+export async function nftBalanceOf(address: string) {
+  try {
+    const balanceData = await publicClient.readContract({
+      address: SolarSeekers.address as `0x${string}`,
+      abi: SolarSeekers.abi,
       functionName: 'balanceOf',
       args: [address],
     });
@@ -25,8 +57,8 @@ export async function balanceOf(address: string) {
 export async function tokenOfOwnerByIndex(address: string, index: number) {
   try {
     const tokenIdData = await publicClient.readContract({
-      address: traitsABI.address as `0x${string}`,
-      abi: traitsABI.abi,
+      address: SolarSeekerTraits.address as `0x${string}`,
+      abi: SolarSeekerTraits.abi,
       functionName: 'tokenOfOwnerByIndex',
       args: [address, index],
     });
@@ -37,7 +69,22 @@ export async function tokenOfOwnerByIndex(address: string, index: number) {
   }
 }
 
-export async function getTokensOfOwner(address: string) {
+export async function tokenOfOwnerByIndexSS(address: string, index: number) {
+  try {
+    const tokenIdData = await publicClient.readContract({
+      address: SolarSeekers.address as `0x${string}`,
+      abi: SolarSeekers.abi,
+      functionName: 'tokenOfOwnerByIndex',
+      args: [address, index],
+    });
+    const tokenId: number = Number(tokenIdData);
+    return tokenId;
+  } catch (error) {
+    return error;
+  }
+}
+
+export async function getTraitIds(address: string) {
   try {
     const balance = (await balanceOf(address)) as number;
     const tokenIds = [];
@@ -53,11 +100,27 @@ export async function getTokensOfOwner(address: string) {
   }
 }
 
+export async function getNFTId(address: string) {
+  try {
+    const balance = (await nftBalanceOf(address)) as number;
+    const tokenIds = [];
+
+    for (let i = 0; i < balance; i++) {
+      const tokenId = await tokenOfOwnerByIndex(address, i);
+      tokenIds.push(tokenId);
+    }
+
+    return tokenIds[0];
+  } catch {
+    return [];
+  }
+}
+
 export async function getUri(tokenId: number) {
   try {
     const uriData = await publicClient.readContract({
-      address: traitsABI.address as `0x${string}`,
-      abi: traitsABI.abi,
+      address: SolarSeekerTraits.address as `0x${string}`,
+      abi: SolarSeekerTraits.abi,
       functionName: 'tokenURI',
       args: [tokenId],
     });
@@ -67,13 +130,37 @@ export async function getUri(tokenId: number) {
   }
 }
 
+export async function getNFTUri(tokenId: number) {
+  try {
+    const uriData = await publicClient.readContract({
+      address: SolarSeekers.address as `0x${string}`,
+      abi: SolarSeekers.abi,
+      functionName: 'tokenURI',
+      args: [tokenId],
+    });
+    return uriData;
+  } catch (error) {
+    return error;
+  }
+}
+
+export async function getEquippedTraits(tokenId: number) {
+  try {
+    const traitIds = await publicClient.readContract({
+      address: SolarSeekers.address as `0x${string}`,
+      abi: SolarSeekers.abi,
+      functionName: 'getEquippedTraits',
+      args: [tokenId],
+    });
+    return traitIds;
+  } catch (error) {
+    return error;
+  }
+}
+
 export async function getToken(uri: string) {
   const content = await fetch(uri, { cache: 'no-store' });
-  const json = await content.json();
+  const token = await content.json();
 
-  return {
-    image: json.image,
-    name: json.name,
-    description: json.description,
-  };
+  return token;
 }

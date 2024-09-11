@@ -1,31 +1,23 @@
 'use client';
-import { getToken, getUri } from '@/lib/tokens';
-import { useEffect, useState } from 'react';
 
 export const Token = ({
-  tokenId,
+  token,
+  selected,
+  cursor,
 }: {
-  tokenId: number;
-  showActions?: boolean;
+  token: any;
+  selected?: boolean;
+  cursor?: boolean;
 }) => {
-  const [token, setToken] = useState<any>({});
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      const uri = (await getUri(tokenId)) as string;
-      const token = await getToken(uri);
-      setToken(token);
-    };
-    fetchToken();
-  }, [tokenId]);
-
   if (!token.image) return null;
 
   return (
-    <div className="flex flex-col w-full gap-6">
-      <p>{token.name}</p>
-      <img src={token.image} alt={token.name} className="w-1/2 h-auto" />
-      <p>{token.description}</p>
+    <div
+      className={`flex gap-3 bg-white h-28 w-28 ${
+        selected ? 'border-2 border-blue-500' : 'border-2 border-black'
+      } ${cursor ? 'cursor-pointer' : ''}`}
+    >
+      <img src={token.image} alt={token.name} className="w-full h-full" />
     </div>
   );
 };

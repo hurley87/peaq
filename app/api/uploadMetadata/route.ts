@@ -18,7 +18,8 @@ const getIrys = async () => {
 };
 
 export async function POST(req: NextRequest): Promise<Response> {
-  const { name, description, image, metadataCode } = await req.json();
+  const { name, description, image, attributes, metadataCode } =
+    await req.json();
 
   const irys = await getIrys();
 
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       name,
       description,
       image,
+      attributes,
     }),
     { tags }
   );

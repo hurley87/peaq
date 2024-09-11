@@ -1,52 +1,34 @@
 'use client';
-import { useEffect, useState } from 'react';
-import QuestsFactory from '../abis/QuestsFactory.json';
+import { useState } from 'react';
+import SolarSeekerTraits from '../abis/SolarSeekerTraits.json';
 import {
   useAccount,
   usePublicClient,
   useWallets,
 } from '@particle-network/connectkit';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import Traits from '../abis/Traits.json';
 import toast from 'react-hot-toast';
 
 export default function Home() {
   const { address, isConnected } = useAccount();
-  const [isMinting, setIsMinting] = useState(false);
   const publicClient = usePublicClient();
   const [primaryWallet] = useWallets();
-  const [quests, setQuests] = useState<any[]>([]);
-  const router = useRouter();
+  const [isAllowing, setIsAllowing] = useState(false);
+  const [receiverAddress, setReceiverAddress] = useState('');
+  const [amount, setAmount] = useState(1);
 
-  useEffect(() => {
-    const fetchQuests = async () => {
-      const fetchedQuests = (await publicClient?.readContract({
-        address: QuestsFactory.address as `0x${string}`,
-        abi: QuestsFactory.abi,
-        functionName: 'getQuests',
-      })) as any[];
+  const allowMint = async () => {
+    if (!address || receiverAddress === '' || amount <= 0) return;
 
-      setQuests(fetchedQuests || []);
-    };
-    if (isConnected) {
-      fetchQuests();
-    }
-  }, [isConnected, publicClient]);
-
-  const handleMint = async () => {
-    if (!address) return;
-
-    setIsMinting(true);
+    setIsAllowing(true);
     try {
       const walletClient = primaryWallet.getWalletClient();
 
-      // // Simulate the contract interaction
+      // Simulate the contract interaction
       const data = await publicClient?.simulateContract({
-        address: QuestsFactory.address as `0x${string}`,
-        abi: QuestsFactory.abi,
-        functionName: 'createQuest',
-        args: [Traits.address],
+        address: SolarSeekerTraits.address as `0x${string}`,
+        abi: SolarSeekerTraits.abi,
+        functionName: 'allowMint',
+        args: [receiverAddress, amount],
         account: address as `0x${string}`,
       });
 
@@ -56,20 +38,21 @@ export default function Home() {
         const hash = await walletClient.writeContract(request as any);
         // // Wait for the transaction to be mined
         await publicClient?.waitForTransactionReceipt({ hash });
-
-        const questAddress = data?.result;
-
-        router.push(`/quests/${questAddress}`);
       } else {
         throw new Error('Invalid request object');
       }
 
-      toast.success('Quest created!');
+      toast.success(
+        `Allowed ${amount} mints for ${receiverAddress.slice(
+          0,
+          6
+        )}...${receiverAddress.slice(-4)}`
+      );
     } catch (error) {
       console.error('Minting error:', error);
-      toast.error('Error minting NFT. Please try again.');
+      toast.error('Error allowing mints');
     } finally {
-      setIsMinting(false);
+      setIsAllowing(false);
     }
   };
 
@@ -79,28 +62,29 @@ export default function Home() {
         <div className="flex justify-center">Connect your wallet</div>
       ) : (
         <>
-          <div className="flex justify-center">
+          <div className="flex flex-col gap-4 w-full max-w-md mx-auto pt-10">
+            <input
+              type="text"
+              placeholder="Receiver Address"
+              value={receiverAddress}
+              onChange={(e) => setReceiverAddress(e.target.value)}
+              className="p-2 border rounded-lg text-black"
+            />
+            <input
+              type="number"
+              placeholder="Amount"
+              value={amount}
+              onChange={(e) => setAmount(Number(e.target.value))}
+              className="p-2 border rounded-lg text-black"
+              min="1"
+            />
             <button
-              className="text-sm bg-white text-black rounded-lg px-3 py-1"
-              onClick={handleMint}
-              disabled={!address || isMinting}
+              className="text-sm bg-white text-black rounded-lg px-3 py-2"
+              onClick={allowMint}
+              disabled={!address || isAllowing}
             >
-              {isMinting ? 'Creating...' : 'Create Quest'}
+              {isAllowing ? 'Allowing...' : 'Allow mints'}
             </button>
-          </div>
-          <div className="px-3">
-            <h2 className="text-xl font-bold mb-4">Quests</h2>
-            {quests.length > 0 ? (
-              <div className="flex flex-col gap-2">
-                {quests.map((quest, index) => (
-                  <Link key={index} href={`/quests/${quest}`}>
-                    Quest #{index + 1}
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <p>No quests available.</p>
-            )}
           </div>
         </>
       )}

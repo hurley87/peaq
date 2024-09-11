@@ -37,7 +37,13 @@ export default function Header() {
       </Link>
       {isConnected ? (
         <div className="flex items-center space-x-2">
-          <span className="text-sm">{address}</span>
+          <Link href="/profile">
+            <span className="text-sm">Profile</span>
+          </Link>
+          <span className="text-sm">|</span>
+          <Link href="/mint">
+            <span className="text-sm">Mint</span>
+          </Link>
           <span className="text-sm">|</span>
           <span className="text-sm">{balance} AGNG</span>
           <span className="text-sm">|</span>

@@ -1,5 +1,4 @@
 'use client';
-
 import {
   useAccount,
   usePublicClient,
@@ -8,6 +7,7 @@ import {
 import { useState, useEffect } from 'react';
 import Quests from '@/abis/Quests.json';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function Quest({
   questAddress,
@@ -22,6 +22,7 @@ export default function Quest({
   const publicClient = usePublicClient();
   const [primaryWallet] = useWallets();
   const [isClaimLoading, setIsClaimLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
     const checkCanClaim = async () => {
@@ -64,7 +65,7 @@ export default function Quest({
 
       const { tokenId } = await response.json();
 
-      toast.success(`Minted Trait NFT $${tokenId}`);
+      toast.success(`Minted Trait NFT #${tokenId}`);
 
       const approveReponse = await fetch('/api/approve', {
         method: 'POST',
@@ -102,7 +103,7 @@ export default function Quest({
       toast.success(
         `${walletAddress.slice(0, 6)}...${walletAddress.slice(
           -4
-        )} can can claim token #${tokenId}`
+        )} can claim token #${tokenId}`
       );
 
       // Handle success (e.g., show a success message)
@@ -144,6 +145,7 @@ export default function Quest({
         // Update canClaim state after successful claim
         setCanClaim(false);
         toast.success('NFT claimed successfully!');
+        router.push('/profile');
       } else {
         throw new Error('Invalid request object');
       }
