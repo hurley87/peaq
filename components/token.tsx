@@ -9,7 +9,7 @@ export const Token = ({
   selected?: boolean;
   cursor?: boolean;
 }) => {
-  if (!token.image) return null;
+  if (!token?.image) return null;
 
   return (
     <div

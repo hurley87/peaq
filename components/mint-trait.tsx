@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import SolarSeekerTraits from '@/abis/SolarSeekerTraits.json';
-import { getMintAllowance } from '@/lib/tokens';
+import { getMintAllowance } from '@/lib/solarseekertraits';
 
 const IRYS_URL = 'https://gateway.irys.xyz/';
 

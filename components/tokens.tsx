@@ -1,14 +1,4 @@
 'use client';
-import {
-  getTraitIds,
-  getUri,
-  getToken,
-  getNFTId,
-  getNFTUri,
-  tokenOfOwnerByIndexSS,
-  getEquippedTraits,
-  getTokenURIFromImages,
-} from '@/lib/tokens';
 import { useEffect, useState } from 'react';
 import {
   useAccount,
@@ -18,6 +8,14 @@ import {
 import SolarSeekers from '@/abis/SolarSeekers.json';
 import toast from 'react-hot-toast';
 import { Token } from './token';
+import { getToken, getTraitIds, getUri } from '@/lib/solarseekertraits';
+import {
+  getEquippedTraits,
+  getId,
+  getNFTUri,
+  getTokenURIFromImages,
+  tokenOfOwnerByIndex,
+} from '@/lib/solarseekers';
 
 export const Tokens = () => {
   const { address } = useAccount();
@@ -51,23 +49,41 @@ export const Tokens = () => {
         })
       );
 
-      setTokens(fetchedTokens);
+      // make sure token with attribute "Type" with value "Background" is first
+      const backgroundToken = fetchedTokens.find((token) =>
+        token.attributes.find(
+          (attr: any) =>
+            attr.trait_type === 'Type' && attr.value === 'Background'
+        )
+      );
+
+      console.log('backgroundToken', backgroundToken);
+
+      const backgroundIndex = fetchedTokens.indexOf(backgroundToken);
+
+      console.log('backgroundIndex', backgroundIndex);
+
+      const updatedTokens = [
+        ...fetchedTokens.slice(backgroundIndex),
+        ...fetchedTokens.slice(0, backgroundIndex),
+      ];
+
+      setTokens(updatedTokens);
 
       // fetch solar seeker NFT
-      const nftId = (await getNFTId(address)) as number;
+      const nftId = (await getId(address)) as number;
 
       if (nftId || nftId === 0) {
         setHasNFT(true);
-        const tokenId = await tokenOfOwnerByIndexSS(address, nftId);
-        const nftUri = await getNFTUri(tokenId as number);
+        const nftUri = await getNFTUri(nftId as number);
 
         const tokenData = await getToken(nftUri as string);
         setToken({
-          id: tokenId,
+          id: nftId,
           ...tokenData,
         });
 
-        const equippedTraits = await getEquippedTraits(tokenId as number);
+        const equippedTraits = await getEquippedTraits(nftId as number);
         setEquippedTraits(equippedTraits as bigint[]);
       }
       setIsLoading(false);
@@ -107,8 +123,8 @@ export const Tokens = () => {
         setHasNFT(true);
 
         // update token with new NFT
-        const nftId = (await getNFTId(address)) as number;
-        const tokenId = await tokenOfOwnerByIndexSS(address, nftId);
+        const nftId = (await getId(address)) as number;
+        const tokenId = await tokenOfOwnerByIndex(address, nftId);
         const nftUri = await getNFTUri(tokenId as number);
         const tokenData = await getToken(nftUri as string);
         setToken({
@@ -162,7 +178,9 @@ export const Tokens = () => {
       equippedTraits[slot] = BigInt(traitIds[index]);
     });
 
-    // convert each equippedTrait to its token image
+    // convert each equippedTrait to its token image.
+    // if the trait is a background, we need to get the first token in the tokens array
+
     const urls = equippedTraits.slice(0, 4).map((trait) => {
       const token = tokens.find((token) => token.id === Number(trait));
       return token?.image;
@@ -222,7 +240,10 @@ export const Tokens = () => {
           <h2>Equipped Traits</h2>
           <div className="flex gap-2">
             {equippedTraits.slice(0, 4).map((trait) => (
-              <Token key={trait} token={tokens[Number(trait)]} />
+              <Token
+                key={trait}
+                token={tokens.find((token) => token.id === Number(trait))}
+              />
             ))}
           </div>
         </div>
