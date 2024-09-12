@@ -68,8 +68,6 @@ export async function getId(address: string) {
       tokenIds.push(tokenId);
     }
 
-    console.log('tokenIds', tokenIds);
-
     return tokenIds[0];
   } catch {
     return [];
@@ -112,7 +110,6 @@ export async function getEquippedTraits(tokenId: number) {
       functionName: 'getEquippedTraits',
       args: [tokenId],
     });
-    console.log('traitIds', traitIds);
     return traitIds;
   } catch (error) {
     return error;

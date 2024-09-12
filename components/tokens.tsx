@@ -57,11 +57,7 @@ export const Tokens = () => {
         )
       );
 
-      console.log('backgroundToken', backgroundToken);
-
       const backgroundIndex = fetchedTokens.indexOf(backgroundToken);
-
-      console.log('backgroundIndex', backgroundIndex);
 
       const updatedTokens = [
         ...fetchedTokens.slice(backgroundIndex),
