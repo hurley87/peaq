@@ -7,6 +7,8 @@ export async function POST(req: NextRequest) {
   try {
     const { urls } = await req.json();
 
+    const filteredUrls = urls.filter((url: string) => url !== null);
+
     const imageResponse = new ImageResponse(
       (
         <div
@@ -19,7 +21,7 @@ export async function POST(req: NextRequest) {
             overflow: 'hidden',
           }}
         >
-          {urls.map((url: string) => (
+          {filteredUrls.map((url: string) => (
             <img
               key={url}
               src={url}

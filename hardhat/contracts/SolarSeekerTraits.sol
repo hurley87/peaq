@@ -12,7 +12,7 @@ contract SolarSeekerTraits is
   ERC721URIStorage,
   Ownable
 {
-  uint256 private _nextTokenId;
+  uint256 private _nextTokenId = 1; // Changed from 0 to 1
 
   // Mapping to track the number of SolarSeekers each address is allowed to mint
   mapping(address => uint256) public mintAllowance;

@@ -57,7 +57,6 @@ export default function MintTrait() {
 
       const walletClient = primaryWallet.getWalletClient();
 
-      // Simulate the contract interaction
       const data = await publicClient?.simulateContract({
         address: SolarSeekerTraits.address as `0x${string}`,
         abi: SolarSeekerTraits.abi,
@@ -70,6 +69,7 @@ export default function MintTrait() {
 
       if (request) {
         const hash = await walletClient.writeContract(request as any);
+
         // // Wait for the transaction to be mined
         await publicClient?.waitForTransactionReceipt({ hash });
 
@@ -84,7 +84,7 @@ export default function MintTrait() {
       setIsUploading(false);
     } catch (error) {
       console.error('Error uploading:', error);
-      toast.error('Error uploading');
+      toast.error('Error minting');
       setIsUploading(false);
     }
   };

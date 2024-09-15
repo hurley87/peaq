@@ -49,20 +49,17 @@ export const Tokens = () => {
         })
       );
 
-      // make sure token with attribute "Type" with value "Background" is first
-      const backgroundToken = fetchedTokens.find((token) =>
-        token.attributes.find(
-          (attr: any) =>
-            attr.trait_type === 'Type' && attr.value === 'Background'
-        )
-      );
+      const traitOrder = ['Background', 'Suit', 'Helmet', 'Powercore', 'Decal'];
 
-      const backgroundIndex = fetchedTokens.indexOf(backgroundToken);
-
-      const updatedTokens = [
-        ...fetchedTokens.slice(backgroundIndex),
-        ...fetchedTokens.slice(0, backgroundIndex),
-      ];
+      const updatedTokens = fetchedTokens.sort((a, b) => {
+        const aType = a.attributes.find(
+          (attr: any) => attr.trait_type === 'Type'
+        )?.value;
+        const bType = b.attributes.find(
+          (attr: any) => attr.trait_type === 'Type'
+        )?.value;
+        return traitOrder.indexOf(aType) - traitOrder.indexOf(bType);
+      });
 
       setTokens(updatedTokens);
 
@@ -95,7 +92,7 @@ export const Tokens = () => {
     try {
       const walletClient = primaryWallet.getWalletClient();
 
-      const tokenIds = tokens.slice(0, 4).map((token) => token.id);
+      const tokenIds = tokens.map((token) => token.id);
 
       const urls = tokens.map((token) => token.image);
 
@@ -165,6 +162,9 @@ export const Tokens = () => {
       if (type.value === 'Suit') return 1;
       if (type.value === 'Helmet') return 2;
       if (type.value === 'Powercore') return 3;
+      if (type.value === 'Decal') return 4;
+      if (type.value === 'Performance') return 5;
+      if (type.value === 'Industry') return 6;
       return 1;
     });
 
@@ -176,8 +176,7 @@ export const Tokens = () => {
 
     // convert each equippedTrait to its token image.
     // if the trait is a background, we need to get the first token in the tokens array
-
-    const urls = equippedTraits.slice(0, 4).map((trait) => {
+    const urls = equippedTraits.map((trait) => {
       const token = tokens.find((token) => token.id === Number(trait));
       return token?.image;
     });
@@ -235,12 +234,14 @@ export const Tokens = () => {
         <div>
           <h2>Equipped Traits</h2>
           <div className="flex gap-2">
-            {equippedTraits.slice(0, 4).map((trait) => (
-              <Token
-                key={trait}
-                token={tokens.find((token) => token.id === Number(trait))}
-              />
-            ))}
+            {equippedTraits
+              .filter((trait) => trait !== BigInt(0))
+              .map((trait) => (
+                <Token
+                  key={trait}
+                  token={tokens.find((token) => token.id === Number(trait))}
+                />
+              ))}
           </div>
         </div>
         <div>
