@@ -113,17 +113,22 @@ export const Tokens = () => {
         // // Wait for the transaction to be mined
         await publicClient?.waitForTransactionReceipt({ hash });
 
-        setHasNFT(true);
-
-        // update token with new NFT
+        // fetch solar seeker NFT
         const nftId = (await getId(address)) as number;
-        const tokenId = await tokenOfOwnerByIndex(address, nftId);
-        const nftUri = await getNFTUri(tokenId as number);
-        const tokenData = await getToken(nftUri as string);
-        setToken({
-          id: tokenId,
-          ...tokenData,
-        });
+
+        if (nftId || nftId === 0) {
+          setHasNFT(true);
+          const nftUri = await getNFTUri(nftId as number);
+
+          const tokenData = await getToken(nftUri as string);
+          setToken({
+            id: nftId,
+            ...tokenData,
+          });
+
+          const equippedTraits = await getEquippedTraits(nftId as number);
+          setEquippedTraits(equippedTraits as bigint[]);
+        }
       } else {
         throw new Error('Invalid request object');
       }
@@ -282,6 +287,8 @@ export const Tokens = () => {
       </div>
     );
   }
+
+  console.log(tokens);
 
   return (
     <div className="flex flex-col gap-6 max-w-sm w-full relative">
