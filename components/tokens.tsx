@@ -288,8 +288,6 @@ export const Tokens = () => {
     );
   }
 
-  console.log(tokens);
-
   return (
     <div className="flex flex-col gap-6 max-w-sm w-full relative">
       <div>
