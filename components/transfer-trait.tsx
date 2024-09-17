@@ -81,8 +81,6 @@ export default function MintTrait() {
 
         const tokenId = receipt?.logs[0].topics[3]; // Use topics[3] instead of args.tokenId
 
-        console.log('tokenId', tokenId);
-
         setImageUrl(image);
         setTokenId(Number(tokenId));
         toast.success('Minted successfully');
