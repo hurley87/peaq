@@ -9,7 +9,6 @@ export const Trait = ({ uri }: { uri: string }) => {
     fetch(uri)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setImage(data.image);
         setName(data.name);
       });

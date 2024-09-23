@@ -115,9 +115,7 @@ export default function MintTrait() {
       if (request) {
         const hash = await walletClient.writeContract(request as any);
 
-        const receipt = await publicClient?.waitForTransactionReceipt({ hash });
-
-        console.log('receipt', receipt);
+        await publicClient?.waitForTransactionReceipt({ hash });
 
         setIsApproved(true);
         toast.success('Approved transfer');
@@ -145,17 +143,14 @@ export default function MintTrait() {
       if (request) {
         const hash = await walletClient.writeContract(request as any);
 
-        const receipt = await publicClient?.waitForTransactionReceipt({ hash });
-
-        console.log('receipt', receipt);
+        await publicClient?.waitForTransactionReceipt({ hash });
 
         setIsTransferring(false);
         toast.success('Transferred successfully');
         setHasMinted(false);
         setIsApproved(false);
       }
-    } catch (error) {
-      console.error('Error transferring:', error);
+    } catch {
       setIsTransferring(false);
     }
   };

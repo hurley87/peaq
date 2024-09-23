@@ -14,7 +14,6 @@ import {
   getId,
   getNFTUri,
   getTokenURIFromImages,
-  tokenOfOwnerByIndex,
 } from '@/lib/solarseekers';
 
 export const Tokens = () => {

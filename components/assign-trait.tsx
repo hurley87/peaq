@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import SolarSeekerTraits from '@/abis/SolarSeekerTraitsNew.json';
 import { getTraitAllowance } from '@/lib/solarseekertraits';
-import Link from 'next/link';
 import { Trait } from './trait';
 
 const IRYS_URL = 'https://gateway.irys.xyz/';

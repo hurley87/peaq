@@ -34,14 +34,13 @@ export async function POST(req: NextRequest) {
       args: [walletAddress, tokenId],
     });
 
-    const transaction = await walletClient.writeContract(request);
+    await walletClient.writeContract(request);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch (e) {
-    console.log('Error processing request: ', e);
+  } catch {
     return new Response(JSON.stringify({ error: 'An error occurred' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
