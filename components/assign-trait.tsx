@@ -56,8 +56,6 @@ export default function AssignTrait() {
 
       const tokenURI = `${IRYS_URL}${receiptId}`;
 
-      console.log(tokenURI);
-
       const walletClient = primaryWallet.getWalletClient();
 
       const data = await publicClient?.simulateContract({
@@ -118,13 +116,6 @@ export default function AssignTrait() {
   if (uri) {
     return (
       <div className="flex flex-col gap-6 max-w-sm mx-auto w-full">
-        <p>
-          Mint{' '}
-          <Link target="_blank" className="text-blue-500" href={uri}>
-            trait
-          </Link>
-          .
-        </p>
         <Trait uri={uri} />
         <button className="bg-white rounded text-black py-2" onClick={mint}>
           {isMinting ? 'Minting...' : 'Mint'}
