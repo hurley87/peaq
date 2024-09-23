@@ -1,10 +1,7 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 
 export const Trait = ({ uri }: { uri: string }) => {
-  if (!uri) return null;
-
   const [image, setImage] = useState(null);
   const [name, setName] = useState(null);
 
