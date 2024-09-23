@@ -14,38 +14,24 @@ contract SolarSeekerTraits is
 {
   uint256 private _nextTokenId = 1; // Changed from 0 to 1
 
-  // Mapping to track the number of SolarSeekers each address is allowed to mint
-  mapping(address => uint256) public mintAllowance;
+  // Mapping to track the token URI each address is allowed to mint
+  mapping(address => string) public allowance;
 
   constructor()
     ERC721('Solar Seeker Traits', 'SolarSeekerTraits')
     Ownable(msg.sender)
   {}
 
-  // Increase mint allowance for a single address by 1
-  function allowMint(address receiver) public onlyOwner {
-    mintAllowance[receiver]++;
+  // Allow minting for a single address with a specified token URI
+  function allowMint(address receiver, string memory uri) public onlyOwner {
+    allowance[receiver] = uri;
   }
 
-  // Increase mint allowance for a single address by a specified amount
-  function allowMint(address receiver, uint256 amt) public onlyOwner {
-    mintAllowance[receiver] += amt;
-  }
-
-  // Increase mint allowance for multiple addresses by a specified amount
-  function allowMint(
-    address[] calldata receivers,
-    uint256 amt
-  ) public onlyOwner {
-    for (uint256 i; i < receivers.length; i++) {
-      mintAllowance[receivers[i]] += amt;
-    }
-  }
-
-  // Mint a new token to a specified address with a given URI, respecting mint allowance
-  function safeMint(address to, string memory uri) public {
-    require(mintAllowance[msg.sender] > 0, 'No mints allowed');
-    mintAllowance[msg.sender]--;
+  // Mint a new token to a specified address, using the token URI from the mint allowance
+  function safeMint(address to) public {
+    require(bytes(allowance[msg.sender]).length > 0, 'No mints allowed');
+    string memory uri = allowance[msg.sender];
+    delete allowance[msg.sender];
     uint256 tokenId = _nextTokenId++;
     _safeMint(to, tokenId);
     _setTokenURI(tokenId, uri);

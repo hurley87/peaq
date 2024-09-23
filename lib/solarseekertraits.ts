@@ -1,5 +1,6 @@
 import { createPublicClient, http } from 'viem';
 import SolarSeekerTraits from '@/abis/SolarSeekerTraits.json';
+import SolarSeekerTraitsNew from '@/abis/SolarSeekerTraitsNew.json';
 import SolarSeekers from '@/abis/SolarSeekers.json';
 import chain from '@/lib/chain';
 
@@ -21,6 +22,21 @@ export async function getMintAllowance(address: string) {
     });
     const allowance: number = Number(allowanceData);
     return allowance;
+  } catch (error) {
+    return error;
+  }
+}
+
+export async function getTraitAllowance(address: string) {
+  try {
+    const allowanceData = await publicClient.readContract({
+      address: SolarSeekerTraitsNew.address as `0x${string}`,
+      abi: SolarSeekerTraitsNew.abi,
+      functionName: 'allowance',
+      args: [address],
+    });
+    const uri: string = String(allowanceData);
+    return uri;
   } catch (error) {
     return error;
   }

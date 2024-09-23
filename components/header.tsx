@@ -49,6 +49,10 @@ export default function Header() {
             <span className="text-sm">Transfer</span>
           </Link>
           <span className="text-sm">|</span>
+          <Link href="/assign">
+            <span className="text-sm">Assign</span>
+          </Link>
+          <span className="text-sm">|</span>
           <span className="text-sm">{balance} AGNG</span>
           <span className="text-sm">|</span>
           <button
