@@ -1,11 +1,10 @@
 import { createPublicClient, http } from 'viem';
-import SolarSeekerTraits from '@/abis/SolarSeekerTraits.json';
 import SolarSeekerTraitsNew from '@/abis/SolarSeekerTraitsNew.json';
 import SolarSeekers from '@/abis/SolarSeekers.json';
 import chain from '@/lib/chain';
 
-const traits_address = SolarSeekerTraits.address as `0x${string}`;
-const abi = SolarSeekerTraits.abi;
+const traits_address = SolarSeekerTraitsNew.address as `0x${string}`;
+const abi = SolarSeekerTraitsNew.abi;
 
 export const publicClient = createPublicClient({
   chain,

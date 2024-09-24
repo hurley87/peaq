@@ -24,12 +24,18 @@ const config = {
       chainId: 9990,
       accounts: [process.env.WALLET_KEY as string], // Make sure to add 0x prefix to the private key
     },
+    peaq: {
+      url: process.env.PEAQ_RPC_URL,
+      chainId: 3338,
+      accounts: [process.env.WALLET_KEY as string], // Make sure to add 0x prefix to the private key
+    },
   },
   etherscan: {
     apiKey: {
       // 'base-sepolia': process.env.ETHERSCAN_KEY as string,
       // 'base-mainnet': process.env.ETHERSCAN_KEY as string,
-      agung: process.env.SUBSCAN_KEY,
+      // agung: process.env.SUBSCAN_KEY,
+      peaq: process.env.SUBSCAN_KEY,
     },
     customChains: [
       {

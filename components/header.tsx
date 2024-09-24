@@ -41,14 +41,6 @@ export default function Header() {
             <span className="text-sm">Profile</span>
           </Link>
           <span className="text-sm">|</span>
-          <Link href="/mint">
-            <span className="text-sm">Mint</span>
-          </Link>
-          <span className="text-sm">|</span>
-          <Link href="/transfer">
-            <span className="text-sm">Transfer</span>
-          </Link>
-          <span className="text-sm">|</span>
           <Link href="/assign">
             <span className="text-sm">Assign</span>
           </Link>

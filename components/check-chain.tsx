@@ -5,11 +5,11 @@ export default function CheckChain() {
   const { chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
 
-  if (!chainId || chainId === 9990) return null;
+  if (!chainId || chainId === 3338) return null;
 
   const switchChain = async () => {
     try {
-      await switchChainAsync({ chainId: 9990 });
+      await switchChainAsync({ chainId: 3338 });
     } catch {}
   };
 

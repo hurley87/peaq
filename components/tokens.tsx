@@ -40,6 +40,8 @@ export const Tokens = () => {
       // fetch all trait tokens
       const tokenIds = (await getTraitIds(address)) as number[];
 
+      console.log('tokenIds', tokenIds);
+
       const fetchedTokens = await Promise.all(
         tokenIds.map(async (tokenId) => {
           const uri = await getUri(tokenId);
@@ -286,6 +288,8 @@ export const Tokens = () => {
       </div>
     );
   }
+
+  console.log('tokens', tokens);
 
   return (
     <div className="flex flex-col gap-6 max-w-sm w-full relative">
