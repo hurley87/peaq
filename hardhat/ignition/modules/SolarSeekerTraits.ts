@@ -1,9 +1,9 @@
-import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+// import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
 
-const SolarSeekerTraitsModule = buildModule('SolarSeekerTraitsModule', (m) => {
-  const traits = m.contract('SolarSeekerTraits', []);
+// const SolarSeekerTraitsModule = buildModule('SolarSeekerTraitsModule', (m) => {
+//   const traits = m.contract('SolarSeekerTraits', []);
 
-  return { traits };
-});
+//   return { traits };
+// });
 
-export default SolarSeekerTraitsModule;
+// export default SolarSeekerTraitsModule;
