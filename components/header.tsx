@@ -41,11 +41,7 @@ export default function Header() {
             <span className="text-sm">Profile</span>
           </Link>
           <span className="text-sm">|</span>
-          <Link href="/assign">
-            <span className="text-sm">Assign</span>
-          </Link>
-          <span className="text-sm">|</span>
-          <span className="text-sm">{balance} AGNG</span>
+          <span className="text-sm">{balance} PEAQ</span>
           <span className="text-sm">|</span>
           <button
             onClick={() => disconnect()}
