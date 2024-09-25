@@ -191,7 +191,7 @@ export default function AssignTrait() {
         </div>
       ) : (
         <div>
-          <p>You are not authorized to assign traits.</p>
+          <p className="text-center">You have no traits to mint.</p>
         </div>
       )}
     </div>
