@@ -112,6 +112,10 @@ export default function AssignTrait() {
 
   const isAdmin = address === '0x1169e27981bceed47e590bb9e327b26529962bae';
 
+  if (!address) {
+    return <div className="text-center">Connect your wallet to mint</div>;
+  }
+
   if (uri) {
     return (
       <div className="flex flex-col gap-6 max-w-sm mx-auto w-full">
